@@ -1,28 +1,45 @@
 import React, { useState } from "react";
 
 function App() {
-    // Stato centrale per i dati del form
     const [formData, setFormData] = useState({
         author: "",
         title: "",
         body: "",
-        public: false
+        public: false,
     });
 
-    // Funzione per aggiornare i campi
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
         setFormData((prev) => ({
             ...prev,
-            [name]: type === "checkbox" ? checked : value
+            [name]: type === "checkbox" ? checked : value,
         }));
     };
 
-    // Solo struttura form visibile
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        fetch("https://67c5b4f3351c081993fb1ab6.mockapi.io/api/posts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("Post inviato!", data);
+                setFormData({
+                    author: "",
+                    title: "",
+                    body: "",
+                    public: false,
+                });
+            });
+    };
+
     return (
         <div className="container mt-5">
             <h2 className="mb-4">Crea un nuovo post</h2>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div className="mb-3">
                     <label className="form-label">Autore</label>
                     <input
@@ -69,6 +86,10 @@ function App() {
                     />
                     <label className="form-check-label">Rendi pubblico</label>
                 </div>
+
+                <button type="submit" className="btn btn-primary">
+                    Invia Post
+                </button>
             </form>
         </div>
     );
